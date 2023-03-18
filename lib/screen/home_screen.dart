@@ -10,7 +10,10 @@ class HomeScreen extends StatelessWidget {
         bottom: false,
         child: Container(
           color: Colors.black,
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+          height: MediaQuery.of(context).size.height,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 50.0,
