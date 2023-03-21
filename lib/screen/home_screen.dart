@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int number = 0;
 
   @override
   void initState() {
@@ -52,10 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     print("build 실행");
-    return Container(
-      width: 50.0,
-      height: 50.0,
-      color: widget.color,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          number++;
+        });
+        print('클릭');
+      },
+      child: Container(
+        width: 50.0,
+        height: 50.0,
+        color: widget.color,
+        child: Center(child: Text(number.toString())),
+      ),
     );
   }
 }
