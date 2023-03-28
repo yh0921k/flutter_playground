@@ -1,71 +1,57 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Color color;
-
-  HomeScreen({
-    required this.color,
-    Key? key,
-  }) : super(key: key) {
-    print("Widget Constructor 실행");
-  }
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() {
-    print("createState 실행");
-    return _HomeScreenState();
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int number = 0;
+  Timer? timer;
+  PageController controller = PageController(initialPage: 0);
 
   @override
   void initState() {
-    print("initState 실행");
     super.initState();
-  }
+    timer = Timer.periodic(Duration(seconds: 4), (timer) {
+      int currentPage = controller.page!.toInt();
+      int nextPage = currentPage + 1;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print("didChangeDependencies 실행");
-  }
+      if (nextPage > 4) {
+        nextPage = 0;
+      }
 
-  @override
-  void deactivate() {
-    print("deactivate 실행");
-    super.deactivate();
+      controller.animateToPage(nextPage,
+          duration: Duration(microseconds: 400), curve: Curves.linear);
+    });
   }
 
   @override
   void dispose() {
-    print("dispose 실행");
+    controller.dispose();
+    if (timer != null) {
+      timer!.cancel();
+    }
+
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    print("didUpdateWidget 실행");
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    print("build 실행");
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          number++;
-        });
-        print('클릭');
-      },
-      child: Container(
-        width: 50.0,
-        height: 50.0,
-        color: widget.color,
-        child: Center(child: Text(number.toString())),
-      ),
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    return Scaffold(
+      body: PageView(
+          controller: controller,
+          children: [1, 2, 3, 4, 5]
+              .map((e) => Image.asset(
+                    'asset/img/image_$e.jpeg',
+                    fit: BoxFit.cover,
+                  ))
+              .toList()),
     );
   }
 }
