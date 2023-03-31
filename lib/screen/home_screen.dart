@@ -24,11 +24,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _TopPart extends StatelessWidget {
+class _TopPart extends StatefulWidget {
   const _TopPart({Key? key}) : super(key: key);
 
   @override
+  State<_TopPart> createState() => _TopPartState();
+}
+
+class _TopPartState extends State<_TopPart> {
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -46,7 +55,7 @@ class _TopPart extends StatelessWidget {
                     color: Colors.white, fontFamily: 'sunflower', fontSize: 30),
               ),
               Text(
-                '2021.12.27',
+                '${selectedDate.year}.${selectedDate.month}.${selectedDate.day}',
                 style: TextStyle(
                     color: Colors.white, fontFamily: 'sunflower', fontSize: 20),
               ),
@@ -66,8 +75,12 @@ class _TopPart extends StatelessWidget {
                           height: 300.0,
                           child: CupertinoDatePicker(
                             mode: CupertinoDatePickerMode.date,
+                            initialDateTime: selectedDate,
+                            maximumDate: DateTime(now.year, now.month, now.day),
                             onDateTimeChanged: (DateTime date) {
-                              print(date);
+                              setState(() {
+                                selectedDate = date;
+                              });
                             },
                           ),
                         ),
@@ -79,7 +92,7 @@ class _TopPart extends StatelessWidget {
                 color: Colors.red,
               )),
           Text(
-            'D+1',
+            'D+${DateTime(now.year, now.month, now.day).difference(selectedDate).inDays + 1}',
             style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'sunflower',
