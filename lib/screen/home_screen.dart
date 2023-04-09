@@ -1,7 +1,5 @@
-import 'dart:async';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,47 +9,110 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Timer? timer;
-  PageController controller = PageController(initialPage: 0);
-
-  @override
-  void initState() {
-    super.initState();
-    timer = Timer.periodic(Duration(seconds: 4), (timer) {
-      int currentPage = controller.page!.toInt();
-      int nextPage = currentPage + 1;
-
-      if (nextPage > 4) {
-        nextPage = 0;
-      }
-
-      controller.animateToPage(nextPage,
-          duration: Duration(microseconds: 400), curve: Curves.linear);
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    if (timer != null) {
-      timer!.cancel();
-    }
-
-    super.dispose();
-  }
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return Scaffold(
-      body: PageView(
-          controller: controller,
-          children: [1, 2, 3, 4, 5]
-              .map((e) => Image.asset(
-                    'asset/img/image_$e.jpeg',
-                    fit: BoxFit.cover,
-                  ))
-              .toList()),
+        backgroundColor: Colors.pink[100],
+        body: SafeArea(
+          bottom: false,
+          child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  _TopPart(
+                    selectedDate: selectedDate,
+                    onPressed: onHeartPressed,
+                  ),
+                  _BottomPart()
+                ],
+              )),
+        ));
+  }
+
+  void onHeartPressed() {
+    final DateTime now = DateTime.now();
+    showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.white,
+              height: 300.0,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: selectedDate,
+                maximumDate: DateTime(now.year, now.month, now.day),
+                onDateTimeChanged: (DateTime date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
+            ),
+          );
+        });
+  }
+}
+
+class _TopPart extends StatelessWidget {
+  final DateTime selectedDate;
+  final VoidCallback onPressed;
+
+  _TopPart({required this.selectedDate, required this.onPressed, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context); // 위젯 트리에서 가장 가까운 테마를 가져옴
+    final textTheme = theme.textTheme;
+    final now = DateTime.now();
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            'U&I',
+            style: textTheme.headline1,
+          ),
+          Column(
+            children: [
+              Text(
+                '우리 처음 만난날',
+                style: textTheme.bodyText1,
+              ),
+              Text(
+                '${selectedDate.year}.${selectedDate.month}.${selectedDate.day}',
+                style: textTheme.bodyText2,
+              ),
+            ],
+          ),
+          IconButton(
+              iconSize: 60.0,
+              onPressed: onPressed,
+              icon: Icon(
+                Icons.favorite,
+                color: Colors.red,
+              )),
+          Text(
+            'D+${DateTime(now.year, now.month, now.day).difference(selectedDate).inDays + 1}',
+            style: textTheme.headline2,
+          )
+        ],
+      ),
     );
+  }
+}
+
+class _BottomPart extends StatelessWidget {
+  const _BottomPart({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(child: Image.asset('asset/img/middle_image.png'));
   }
 }
